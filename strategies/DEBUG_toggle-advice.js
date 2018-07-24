@@ -1,12 +1,14 @@
 var settings = {
   wait: 0,
-  each: 6
+  each: 2
 };
 
 // -------
 
 var _ = require('lodash');
 var log = require('../core/log.js');
+var moment = require('moment');
+var lastAdvice = moment();
 
 var i = 0;
 
@@ -22,14 +24,19 @@ var method = {
     if(settings.wait > i)
       return;
 
-    log.info('iteration:', i);
-    
-    if(i % settings.each === 0) {
-      log.debug('trigger SHORT');
-      this.advice('short');
-    } else if(i % settings.each === settings.each / 2) {
-      log.debug('trigger LONG');
-      this.advice('long');
+    log.info('iteration:', i, 'candle time:', candle.start.utc().format("YYYY-MM-DD HH:mm:ss"));
+
+    if (moment().subtract(3, 's').isAfter(lastAdvice)) {
+      lastAdvice = moment();
+      if(i % settings.each === 0) {
+        log.debug('trigger SHORT');
+        this.advice('short');
+      } else if(i % settings.each === settings.each / 2) {
+        log.debug('trigger LONG');
+        this.advice('long');
+      }
+    } else {
+      log.debug('Skipping trigger');
     }
 
     // if(i % 2 === 0)
