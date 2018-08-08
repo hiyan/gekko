@@ -389,59 +389,6 @@ Trader.prototype.getTrades = function(since, callback, descending) {
   retry(null, handler, process);
 }
 
-Trader.prototype.checkOrderBook = function(type, price, callback) {
-  log(name, 'checkOrderBook() type:', type, 'price:', price);
-
-  if (type !== 'BUY' && type !== 'SELL')
-    return callback('invalid order type.');
-
-  if (!_.isNumber(price))
-    return callback('invalid price.');
-  else
-    price = parseFloat(price);
-
-  const groupby = (orders, reverse = false) => {
-    let temp = _.cloneDeep(orders).reduce((res, obj) => {
-        if (!(obj.price in res)) {
-          obj.count = 1;
-          obj.volume = +obj.volume;
-          res.__array.push(res[obj.price] = obj);
-        } else {
-          res[obj.price].volume = round(+obj.volume + res[obj.price].volume);
-          res[obj.price].count++;
-        }
-        return res;
-      }, { __array: [] }).__array
-      .sort((a, b) => { return b.price - a.price; });
-
-    if (reverse)
-      return temp.reverse();
-
-    return temp;
-  };
-
-  const process = (err, data) => {
-    if (err) {
-      // log(name, 'Error: -->', err);
-      return callback(err);
-    }
-
-    let result;
-    if (type === 'SELL')
-      result = _.find(groupby(data.asks, true), (o) => { return o.price == price; });
-    else if (type === 'BUY')
-      result = _.find(groupby(data.bids), (o) => { return o.price == price; });
-
-    if (result)
-      callback(undefined, result);
-    else
-      callback('order not found for price ' + price);
-  };
-
-  const handler = cb => this.luno.getOrderBook(processResponse('checkOrderBook', cb));
-  retry(null, handler, process);
-}
-
 Trader.getCapabilities = function() {
   return {
     name: 'Luno',
