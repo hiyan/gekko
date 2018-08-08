@@ -326,15 +326,18 @@ Trader.prototype.cancelOrder = function(order, callback) {
         return callback(err);
       }
     }
+
     if (data && !data.success) {
       log('cancelOrder() --> status:', data.success);
       return callback(undefined, false);
     }
+
     this.checkOrder(order, (error, orderStatus) => {
       if (error) {
         log(name, 'cancelOrder\'s checkOrder failed. What do i do here?');
         return callback(error, false);
       }
+
       if (orderStatus.executed) {
         log(name, 'cancelOrder() -->', order, 'was fulfilled before cancelOrder was completed.');
         return callback(undefined, true);
@@ -381,6 +384,7 @@ Trader.prototype.getTrades = function(since, callback, descending) {
     pair: this.pair,
     since: since
   }
+
   const handler = cb => this.luno.getTrades(options, processResponse('getTrades', cb));
   retry(null, handler, process);
 }
