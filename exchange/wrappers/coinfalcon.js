@@ -49,7 +49,9 @@ const recoverableErrors = [
   '408',
   // "The timestamp 1527996378 is invalid, current timestamp is 1527996441."
   'is invalid, current timestamp is',
-  'EHOSTUNREACH'
+  'EHOSTUNREACH',
+  // https://github.com/askmike/gekko/issues/2407
+  'We are fixing a few issues, be back shortly.'
 ];
 
 Trader.prototype.processResponse = function(method, args, next) {
@@ -242,7 +244,27 @@ Trader.prototype.cancelOrder = function(order, callback) {
   const handle = this.processResponse(this.cancelOrder, args, (err, res) => {
     if(err) {
       if(err.message.includes('has wrong status.')) {
-        return callback(undefined, true);
+
+        // see https://github.com/askmike/gekko/issues/2440
+        console.log('CANCELFIX', order, 'order has wrong status...');
+        return setTimeout(() => {
+          this.checkOrder(order, (err, res) => {
+            console.log('CANCELFIX', order, 'checked it:', res);
+
+            if(err) {
+              return callback(err);
+            }
+
+            if(!res.open) {
+              return callback(undefined, true);
+            }
+
+            return setTimeout(
+              () => this.cancelOrder(order, callback),
+              this.interval
+            );
+          });
+        }, this.interval);
       }
       return callback(err);
     }
