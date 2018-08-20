@@ -7,6 +7,8 @@ const moment = require('moment');
 const log = require(dirs.core + 'log');
 const Broker = require(dirs.gekko + '/exchange/gekkoBroker');
 
+require(dirs.gekko + '/exchange/dependencyCheck');
+
 const Trader = function(next) {
 
   _.bindAll(this);
@@ -246,7 +248,7 @@ Trader.prototype.createOrder = function(side, amount, advice, id) {
 
   this.order = this.broker.createOrder(type, side, amount);
 
-  this.order.on('filled', f => log.info('[ORDER] partial', side, ' fill, total filled:', f));
+  this.order.on('fill', f => log.info('[ORDER] partial', side, 'fill, total filled:', f));
   this.order.on('statusChange', s => log.debug('[ORDER] statusChange:', s));
 
   this.order.on('error', e => {
