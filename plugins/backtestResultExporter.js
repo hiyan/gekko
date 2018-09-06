@@ -89,6 +89,9 @@ BacktestResultExporter.prototype.processPerformanceReport = function(performance
 
 BacktestResultExporter.prototype.finalize = function(done) {
   const backtest = {
+    watch: config.watch,
+    tradingAdvisor: config.tradingAdvisor,
+    strategy: config[config.tradingAdvisor.method],
     performanceReport: this.performanceReport
   };
 
