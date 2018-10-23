@@ -89,6 +89,7 @@ Trader.prototype.processResponse = function(method, next) {
     if(error) {
       if(includes(error.message, recoverableErrors)) {
         error.notFatal = true;
+        error.backoffDelay = 1000;
       }
 
       if(
@@ -97,8 +98,6 @@ Trader.prototype.processResponse = function(method, next) {
       ) {
         error.retry = 10;
       }
-
-      console.log(error.message);
 
       return next(error);
     }
@@ -414,23 +413,30 @@ Trader.getCapabilities = function() {
     name: 'GDAX',
     slug: 'gdax',
     currencies: ['USD', 'EUR', 'GBP', 'BTC'],
-    assets: ['BTC', 'LTC', 'ETH', 'BCH', 'ETC'],
+    assets: ['BTC', 'LTC', 'ETH', 'BCH', 'ETC', 'ZRX'],
     markets: [
       { pair: ['USD', 'BTC'], minimalOrder: { amount: 0.001, unit: 'asset' } },
       { pair: ['USD', 'LTC'], minimalOrder: { amount: 0.1, unit: 'asset' } },
       { pair: ['USD', 'ETH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
       { pair: ['USD', 'BCH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
       { pair: ['USD', 'ETC'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['USD', 'ZRX'], minimalOrder: { amount: 1, unit: 'asset' } },
       { pair: ['EUR', 'BTC'], minimalOrder: { amount: 0.001, unit: 'asset' } },
-      { pair: ['EUR', 'ETH'], minimalOrder: { amount: 0.1, unit: 'asset' } },
-      { pair: ['EUR', 'LTC'], minimalOrder: { amount: 0.01, unit: 'asset' } },
-      { pair: ['EUR', 'BCH'], minimalOrder: { amount: 0.1, unit: 'asset' } },
-      { pair: ['EUR', 'ETC'], minimalOrder: { amount: 0.1, unit: 'asset' } },
+      { pair: ['EUR', 'LTC'], minimalOrder: { amount: 0.1, unit: 'asset' } },
+      { pair: ['EUR', 'ETH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['EUR', 'BCH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['EUR', 'ETC'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['EUR', 'ZRX'], minimalOrder: { amount: 1, unit: 'asset' } },
       { pair: ['GBP', 'BTC'], minimalOrder: { amount: 0.001, unit: 'asset' } },
+      { pair: ['GBP', 'LTC'], minimalOrder: { amount: 0.1, unit: 'asset' } },
+      { pair: ['GBP', 'ETH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['GBP', 'BCH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['GBP', 'ETC'], minimalOrder: { amount: 0.01, unit: 'asset' } },
       { pair: ['BTC', 'LTC'], minimalOrder: { amount: 0.1, unit: 'asset' } },
       { pair: ['BTC', 'ETH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
       { pair: ['BTC', 'BCH'], minimalOrder: { amount: 0.01, unit: 'asset' } },
       { pair: ['BTC', 'ETC'], minimalOrder: { amount: 0.01, unit: 'asset' } },
+      { pair: ['BTC', 'ZRX'], minimalOrder: { amount: 1, unit: 'asset' } }
     ],
     requires: ['key', 'secret', 'passphrase'],
     providesHistory: 'date',
